@@ -9,4 +9,5 @@ class AgentState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
     employee_id: str
     route: Literal["helpdesk", "reject"]
-    llm_calls: Annotated[int, operator.add]
+    llm_calls: int
+    total_llm_calls: Annotated[int, operator.add]

@@ -1,6 +1,7 @@
 import json
 from typing import Literal
 
+from app.llm import TOOLS_BY_NAME, get_model_with_tools
 from app.graph.state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
@@ -10,18 +11,19 @@ def llm_call(state: AgentState):
 
     return {
         "messages": [
-            model_with_tools.invoke(
+            get_model_with_tools().invoke(
                 [SystemMessage(content="You are a helpful assistant.")] + state["messages"]
             )
         ],
-        "llm_calls": 1
+        "llm_calls": state.get("llm_calls", 0) + 1,
+        "total_llm_calls": 1
     }
 
 def tool_node(state: AgentState):
 
     result = []
     for tool_call in state["messages"][-1].tool_calls:
-        tool = tools_by_name[tool_call["name"]]
+        tool = TOOLS_BY_NAME[tool_call["name"]]
         observation = tool.invoke(tool_call["args"])
         result.append(ToolMessage(content=json.dumps(observation, ensure_ascii=False), tool_call_id=tool_call["id"]))
 
