@@ -1,6 +1,6 @@
 from langchain_core.tools import tool
 
-ALLOWED_LEAVE_FIELDS = {"leave_balance", "upcoming_leaves"}
+ALLOWED_LEAVE_FIELDS = {"employee_id", "leave_balance", "upcoming_leaves"}
 
 @tool
 def knowledge_search(query: str) -> str:

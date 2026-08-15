@@ -5,14 +5,24 @@ from app.llm import TOOLS_BY_NAME, get_model_with_tools
 from app.graph.state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
-from langchain_core.messages import SystemMessage, ToolMessage
+from langchain_core.messages import SystemMessage, ToolMessage, AIMessage
+
+SYSTEM_PROMPT = """คุณคือผู้ช่วย Internal Helpdesk ของบริษัท TechCorp
+
+คุณกำลังให้บริการพนักงานรหัส {employee_id}
+ข้อมูลส่วนบุคคลที่คุณเข้าถึงได้เป็นของพนักงานคนนี้เท่านั้น
+หากผู้ใช้ขอดูข้อมูลของพนักงานคนอื่น ให้ปฏิเสธและอธิบายว่าดูได้เฉพาะข้อมูลของเจ้าของบัญชี
+ห้ามอ้างว่าข้อมูลที่แสดงเป็นของพนักงานคนอื่นเด็ดขาด
+ตอบจากข้อมูลที่ได้จาก tool เท่านั้น
+ถ้าข้อมูลจาก tool ไม่เกี่ยวข้องกับคำถาม ให้บอกว่าไม่พบข้อมูลในคู่มือ
+ห้ามตอบจากความรู้ทั่วไปเกี่ยวกับ IT หรือ HR เด็ดขาด แม้จะมั่นใจว่าถูกก็ตาม"""
 
 def llm_call(state: AgentState):
 
     return {
         "messages": [
             get_model_with_tools().invoke(
-                [SystemMessage(content="You are a helpful assistant.")] + state["messages"]
+                [SystemMessage(content=SYSTEM_PROMPT.format(employee_id=state["employee_id"]))] + state["messages"]
             )
         ],
         "llm_calls": state.get("llm_calls", 0) + 1,
@@ -29,24 +39,31 @@ def tool_node(state: AgentState):
 
     return {"messages": result}
 
-def should_continue(state: AgentState) -> Literal["tool_node", END]:
+def should_continue(state: AgentState) -> Literal["tool_node", "give_up", END]:
 
-    messages = state["messages"]
-    last_message = messages[-1]
+    if state.get("llm_calls", 0) >= 5:
+        return "give_up"
 
-    if last_message.tool_calls:
+    if state["messages"][-1].tool_calls:
         return "tool_node"
-    else:
-        return END
+    return END
+
+def give_up(state: AgentState) -> dict:
+    return {"messages": [AIMessage(
+        content="ขออภัยครับ ผมหาข้อมูลที่ตรงกับคำถามนี้ไม่พบ "
+                "รบกวนติดต่อ IT Helpdesk ที่ #it-support หรือ HR ที่ hr@techcorp.co.th ครับ"
+    )]}
 
 
 def build_graph():
     builder = StateGraph(AgentState)
     builder.add_node("llm_call", llm_call)
     builder.add_node("tool_node", tool_node)
+    builder.add_node("give_up", give_up)
 
     builder.add_edge(START, "llm_call")
     builder.add_conditional_edges("llm_call", should_continue)
     builder.add_edge("tool_node", "llm_call")
+    builder.add_edge("give_up", END)
 
     return builder.compile(checkpointer=MemorySaver())
