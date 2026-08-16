@@ -2,7 +2,8 @@ import os
 from functools import lru_cache
 
 from langchain.chat_models import init_chat_model
-from app.tools.fake import knowledge_search, get_leave_balance
+from app.tools.fake import get_leave_balance
+from app.tools.knowledge import knowledge_search
 
 TOOLS = [knowledge_search, get_leave_balance]
 TOOLS_BY_NAME = {t.name: t for t in TOOLS}
