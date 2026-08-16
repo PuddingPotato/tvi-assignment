@@ -1,8 +1,6 @@
 from app.rag.retriever import search
 from langchain_core.tools import tool
 
-ALLOWED_LEAVE_FIELDS = {"employee_id", "leave_balance", "upcoming_leaves"}
-
 @tool
 def knowledge_search(query: str) -> str:
     """ค้นหาข้อมูลจากคู่มือพนักงาน TechCorp — นโยบายการลา, การเบิกค่าใช้จ่าย,

@@ -34,7 +34,7 @@ def tool_node(state: AgentState):
     result = []
     for tool_call in state["messages"][-1].tool_calls:
         tool = TOOLS_BY_NAME[tool_call["name"]]
-        observation = tool.invoke(tool_call["args"])
+        observation = tool.invoke({**tool_call["args"], "employee_id": state["employee_id"]})
         result.append(ToolMessage(content=json.dumps(observation, ensure_ascii=False), tool_call_id=tool_call["id"]))
 
     return {"messages": result}

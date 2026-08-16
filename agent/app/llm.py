@@ -2,10 +2,11 @@ import os
 from functools import lru_cache
 
 from langchain.chat_models import init_chat_model
-from app.tools.fake import get_leave_balance
 from app.tools.knowledge import knowledge_search
+from app.tools.leave import get_leave_balance, get_ticket_status, get_my_tickets
 
-TOOLS = [knowledge_search, get_leave_balance]
+
+TOOLS = [knowledge_search, get_leave_balance, get_ticket_status, get_my_tickets]
 TOOLS_BY_NAME = {t.name: t for t in TOOLS}
 
 @lru_cache(maxsize=1)
