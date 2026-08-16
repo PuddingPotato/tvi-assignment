@@ -1,0 +1,12 @@
+.git
+.gitignore
+.vscode
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+agent/chroma_db/
+
+.env
