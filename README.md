@@ -419,7 +419,7 @@ judge ให้ตกเพราะคำตอบไม่ได้แนะ�
 
 ตรวจจับและปฏิเสธ prompt ที่พยายาม override system instructions ด้วย guardrail node ใน LangGraph pipeline
 
-**วิธีทำงาน:** มี `guardrail` node แยกต่างหากใน LangGraph graph ที่รันก่อน `llm_call` ทุกครั้ง — node นี้ตรวจ user message ด้วย regex patterns (เช่น `ignore previous instructions`, `tell me your system prompt`, privilege escalation) และ short-circuit คืน refusal ทันทีโดยไม่เรียก LLM หรือ tool ใดเลย (**`tools_used = []` ทุกกรณี**)
+**วิธีทำงาน:** agent node ตรวจสอบ user message ก่อน routing — ถ้าพบ pattern ที่เข้าข่าย injection (เช่น "ignore previous instructions", "tell me your system prompt", หรือ privilege escalation) จะตอบด้วย canned refusal โดยไม่เรียก tool ใดเลย (**`tools_used = []` ทุกกรณี**)
 
 **ผลทดสอบ 3/3:**
 
