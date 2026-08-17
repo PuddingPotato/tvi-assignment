@@ -414,3 +414,7 @@ judge ให้ตกเพราะคำตอบไม่ได้แนะ�
 
 - **LangSmith:** รองรับ tracing ดู graph flow และ tool calls แบบละเอียดผ่าน `.env` (`LANGCHAIN_TRACING_V2=true`)
 - **`tools_used` ใน response:** ส่ง array ของ tool ที่ agent เรียกใช้กลับไปในทุก response ของ `POST /chat` ทำให้ตรวจได้ง่ายๆ เลยว่าคำตอบนี้ดึงมาจาก KB, ยิง API หรือตอบตรงๆ โดยไม่ต้องเปิด dashboard อื่น
+
+### Streaming Response (SSE)
+
+เพิ่ม endpoint `POST /chat/stream` สำหรับส่งคำตอบกลับมาทีละ Token แบบเรียลไทม์ผ่าน Server-Sent Events (`text/event-stream`) โดยใช้ `graph.stream(stream_mode="messages")` และกรองส่งเฉพาะ Token คำตอบจริง ไม่ส่ง tool-calling JSON หรือ thinking block ภายใน เพื่อให้ Client นำไปแสดงผลแบบ Typewriter ได้ทันทีโดยไม่ต้องรอจนจบประโยค
