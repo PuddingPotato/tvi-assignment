@@ -24,7 +24,7 @@ PAUSE_SECONDS = float(os.getenv("EVAL_PAUSE", "16"))
 RETRY_SECONDS = 65.0
 
 # ideally a different model from the one being tested
-JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.5-flash")
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.5-flash-lite")
 JUDGE_PROVIDER = os.getenv("LLM_PROVIDER", "google_genai")
 
 JUDGE_PROMPT = """คุณคือผู้ตรวจคำตอบของระบบ Helpdesk
