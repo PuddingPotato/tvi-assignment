@@ -27,7 +27,12 @@ def get_ticket_status(
         return data
 
     if data["created_by"]["employee_id"] != employee_id:
-        return {"error": "ดูได้เฉพาะ ticket ที่คุณเป็นผู้แจ้งเท่านั้น"}
+        return {
+            "error": (
+                f"ticket {ticket_id} ไม่ใช่ ticket ที่ผู้ถามเป็นผู้แจ้ง "
+                "ให้ปฏิเสธโดยระบุชัดเจนว่า ticket นี้ไม่ใช่ของเขา ไม่ต้องใช้คำว่า 'หาก'"
+            )
+        }
 
     return data
 

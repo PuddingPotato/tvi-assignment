@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class ChatRequest(BaseModel):
     message: str
     employee_id: str = "EMP-1234"
@@ -8,3 +9,4 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     thread_id: str
     answer: str
+    tools_used: list[str]
